@@ -38,11 +38,9 @@ public class HungerStrike
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
         MinecraftForge.EVENT_BUS.register(this);
-        //FMLJavaModLoadingContext.get().getModEventBus().register(this);
     }
 
     private void setup (final FMLCommonSetupEvent event) {
-        //config.setup(event.);
         PacketHandler.init();
 
         IForgeRegistry<Item> itemRegistry = ForgeRegistries.ITEMS;
@@ -58,22 +56,4 @@ public class HungerStrike
     public void registerCapabilities (RegisterCapabilitiesEvent event) {
         ExtendedPlayerHandler.register(event);
     }
-
-    //@SubscribeEvent
-    //public void onConfigChanged (ConfigChangedEvent.OnConfigChangedEvent event) {
-        //if (event.getModID().equals(MOD_ID))
-        //    config.syncConfig();
-    //}
-
-    //@SidedProxy(clientSide = SOURCE_PATH + "proxy.ClientProxy", serverSide = SOURCE_PATH + "proxy.ServerProxy")
-    //public static CommonProxy proxy;
-
-    /*public static final SimpleChannel network = NetworkRegistry.ChannelBuilder
-        .named(new ResourceLocation(MOD_ID, "channel"))
-        .clientAcceptedVersions(s -> true)
-        .serverAcceptedVersions(s -> true)
-        .networkProtocolVersion(() -> "1.0.0")
-        .simpleChannel();*/
-
-    //public static SimpleNetworkWrapper network;
 }

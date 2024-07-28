@@ -1,6 +1,6 @@
 {
     "commands.hungerstrike.add.success": "%s is now on hunger strike",
-    "commands.hungerstrike.list": "There are %d (out of %d seen) players on hunger strike:",
+    "commands.hungerstrike.list": "There are %d players on hunger strike: %d",
     "commands.hungerstrike.list.none": "No players are on hunger strike",
     "commands.hungerstrike.mode.none": "Hunger strike is currently disabled for all players",
     "commands.hungerstrike.mode.list": "Hunger strike is currently enabled for listed players",

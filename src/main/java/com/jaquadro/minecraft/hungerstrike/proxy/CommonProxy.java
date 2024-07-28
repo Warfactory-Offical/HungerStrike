@@ -28,10 +28,6 @@ public class CommonProxy
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    public void registerNetworkHandlers () {
-        //HungerStrike.network.registerMessage(RequestSyncMessage.Handler.class, RequestSyncMessage.class, RequestSyncMessage.MESSAGE_ID, Side.SERVER);
-    }
-
     @SubscribeEvent
     public void tick (TickEvent.PlayerTickEvent event) {
         playerHandler.tick(event.player, event.phase, event.side);
@@ -57,7 +53,7 @@ public class CommonProxy
 
         if (!event.getLevel().isClientSide && entity instanceof ServerPlayer)
             playerHandler.restoreData((Player) entity);
-        else if (event.getLevel().isClientSide && entity instanceof ServerPlayer)
+        else if (event.getLevel().isClientSide && entity instanceof Player)
            PacketHandler.INSTANCE.sendToServer(new PacketRequestSync());
     }
 

@@ -1,6 +1,8 @@
 package com.jaquadro.minecraft.hungerstrike.network;
 
 import com.jaquadro.minecraft.hungerstrike.ExtendedPlayer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -43,8 +45,13 @@ public class PacketSyncExtendedPlayer
 
     @OnlyIn(Dist.CLIENT)
     private static void handle(PacketSyncExtendedPlayer message, ServerPlayer mp) {
-        ExtendedPlayer ep = ExtendedPlayer.get(mp);
+        ExtendedPlayer ep = ExtendedPlayer.get(clientPlayer());
         if (ep != null)
             ep.loadState(message.hungerStrikeEnabled);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static LocalPlayer clientPlayer() {
+        return Minecraft.getInstance().player;
     }
 }

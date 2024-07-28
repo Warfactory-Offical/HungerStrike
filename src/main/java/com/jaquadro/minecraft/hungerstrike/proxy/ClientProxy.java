@@ -14,13 +14,6 @@ public class ClientProxy extends CommonProxy {
 
         MinecraftForge.EVENT_BUS.addListener(this::renderGameOverlay);
     }
-    @Override
-    public void registerNetworkHandlers () {
-        super.registerNetworkHandlers();
-
-        //HungerStrike.network.registerMessage(SyncExtendedPlayerMessage.Handler.class, SyncExtendedPlayerMessage.class, SyncExtendedPlayerMessage.MESSAGE_ID, Side.CLIENT);
-        //HungerStrike.network.registerMessage(SyncConfigMessage.Handler.class, SyncConfigMessage.class, SyncConfigMessage.MESSAGE_ID, Side.CLIENT);
-    }
 
     private void renderGameOverlay (RenderGuiOverlayEvent.Pre event) {
         if (event.getOverlay() == GuiOverlayManager.findOverlay(VanillaGuiOverlay.FOOD_LEVEL.id())) {

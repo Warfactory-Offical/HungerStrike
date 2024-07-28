@@ -18,13 +18,11 @@ public class PacketRequestSync
     }
 
     public static void handle(PacketRequestSync message, Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () -> () -> {
-            ServerPlayer player = ctx.get().getSender();
-            if (player != null) {
-                PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-                PacketHandler.INSTANCE.sendTo(new PacketSyncConfig(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-            }
-        });
+        ServerPlayer player = ctx.get().getSender();
+        if (player != null) {
+            PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+            PacketHandler.INSTANCE.sendTo(new PacketSyncConfig(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        }
 
         ctx.get().setPacketHandled(true);
     }

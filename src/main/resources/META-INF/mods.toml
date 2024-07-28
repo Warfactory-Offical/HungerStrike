@@ -1,28 +1,25 @@
 modLoader="javafml"
-loaderVersion="[38,)"
+loaderVersion="${loader_version_range}"
 issueTrackerURL="https://github.com/jaquadro/HungerStrike/issues"
 displayURL="https://minecraft.curseforge.com/projects/hungerstrike"
-authors="Texelsaur"
-license="MIT"
+authors="${mod_authors}"
+license="${mod_license}"
 
 [[mods]]
-    modId="hungerstrike"
-    version="${file.jarVersion}"
-    displayName="Hunger Strike"
-    description='''
-    Restores pre-hunger health mechanics
-    '''
+    modId="${mod_id}"
+    version="${mod_version}"
+    displayName="${mod_name}"
+    description='''${mod_description}'''
 
-[[dependencies.hungerstrike]]
-    modId="forge"
-    mandatory=true
-    versionRange="[38,)"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.hungerstrike]]
+[[dependencies.${mod_id}]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18,)"
+    versionRange="${minecraft_version_range}"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="BOTH"

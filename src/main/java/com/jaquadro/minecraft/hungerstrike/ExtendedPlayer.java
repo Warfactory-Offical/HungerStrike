@@ -32,7 +32,7 @@ public class ExtendedPlayer
     }
 
     public static ExtendedPlayer get (Player player) {
-        if (EXTENDED_PLAYER_CAPABILITY == null)
+        if (EXTENDED_PLAYER_CAPABILITY == null || player == null)
             return null;
 
         return player.getCapability(EXTENDED_PLAYER_CAPABILITY, null).orElse(null);
@@ -46,16 +46,12 @@ public class ExtendedPlayer
         hungerStrikeEnabled = compound.getBoolean("Enabled");
     }
 
-    //public void saveNBTDataSync (NBTTagCompound compound) {
-    //    compound.setBoolean("Enabled", hungerStrikeEnabled);
-    //}
-
     public void enableHungerStrike (boolean enable) {
         if (hungerStrikeEnabled != enable) {
             hungerStrikeEnabled = enable;
             if (player instanceof ServerPlayer) {
                 ServerPlayer playerMP = (ServerPlayer)player;
-                PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), playerMP.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), playerMP.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
             }
         }
     }
@@ -67,21 +63,6 @@ public class ExtendedPlayer
     public boolean isOnHungerStrike () {
         return hungerStrikeEnabled;
     }
-
-    /*public boolean getEffectiveHungerStrike () {
-        if (!player.worldObj.isRemote)
-            return hungerStrikeEnabled;
-
-        switch (HungerStrike.config.getMode()) {
-            case NONE:
-                return false;
-            case ALL:
-                return true;
-            case LIST:
-            default:
-                return hungerStrikeEnabled;
-        }
-    }*/
 
     private boolean shouldTick () {
         ModConfig.Mode mode = ModConfig.GENERAL.mode.get();
