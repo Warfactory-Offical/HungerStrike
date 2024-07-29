@@ -1,29 +1,25 @@
 package com.jaquadro.minecraft.hungerstrike.network;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 
 public class PacketRequestSync
 {
-    public static void encode(PacketRequestSync msg, FriendlyByteBuf buf) {}
+    public PacketRequestSync() { }
 
-    public static PacketRequestSync decode(FriendlyByteBuf buf) {
-        return new PacketRequestSync();
-    }
+    public PacketRequestSync(FriendlyByteBuf buf) { }
 
-    public static void handle(PacketRequestSync message, Supplier<NetworkEvent.Context> ctx) {
-        ServerPlayer player = ctx.get().getSender();
+    public void write(FriendlyByteBuf buf) { }
+
+    public void handle(NetworkEvent.Context ctx) {
+        ServerPlayer player = ctx.getSender();
         if (player != null) {
-            PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
-            PacketHandler.INSTANCE.sendTo(new PacketSyncConfig(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+            PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
+            PacketHandler.INSTANCE.sendTo(new PacketSyncConfig(), player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
         }
 
-        ctx.get().setPacketHandled(true);
+        ctx.setPacketHandled(true);
     }
 }

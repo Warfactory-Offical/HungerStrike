@@ -4,26 +4,15 @@ import com.jaquadro.minecraft.hungerstrike.ExtendedPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.NetworkEvent;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class PacketSyncExtendedPlayer
 {
     private boolean hungerStrikeEnabled;
-
-    public static void encode(PacketSyncExtendedPlayer msg, FriendlyByteBuf buf) {
-        buf.writeBoolean(msg.hungerStrikeEnabled);
-    }
-
-    public static PacketSyncExtendedPlayer decode(FriendlyByteBuf buf) {
-        return new PacketSyncExtendedPlayer(buf.readBoolean());
-    }
 
     private PacketSyncExtendedPlayer(boolean hungerStrikeEnabled) {
         this.hungerStrikeEnabled = hungerStrikeEnabled;
@@ -33,18 +22,28 @@ public class PacketSyncExtendedPlayer
         this(getHungerStrikeFromPlayer(player));
     }
 
+    public PacketSyncExtendedPlayer(FriendlyByteBuf buf) {
+        this(buf.readBoolean());
+    }
+
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBoolean(hungerStrikeEnabled);
+    }
+
     private static boolean getHungerStrikeFromPlayer(Player player) {
         ExtendedPlayer ep = ExtendedPlayer.get(player);
         return (ep != null) && ep.isOnHungerStrike();
     }
 
-    public static void handle(PacketSyncExtendedPlayer message, Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> handle(message, ctx.get().getSender()));
-        ctx.get().setPacketHandled(true);
+    public void handle(NetworkEvent.Context ctx) {
+        if (FMLEnvironment.dist.isClient())
+            handle(this);
+
+        ctx.setPacketHandled(true);
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static void handle(PacketSyncExtendedPlayer message, ServerPlayer mp) {
+    private static void handle(PacketSyncExtendedPlayer message) {
         ExtendedPlayer ep = ExtendedPlayer.get(clientPlayer());
         if (ep != null)
             ep.loadState(message.hungerStrikeEnabled);

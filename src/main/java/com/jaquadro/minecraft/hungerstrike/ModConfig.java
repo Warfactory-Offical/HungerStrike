@@ -1,21 +1,21 @@
 package com.jaquadro.minecraft.hungerstrike;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 public class ModConfig
 {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final General GENERAL = new General(BUILDER);
-    public static final ForgeConfigSpec spec = BUILDER.build();
+    public static final ModConfigSpec spec = BUILDER.build();
 
     public static class General {
-        public final ForgeConfigSpec.ConfigValue<Mode> mode;
-        public final ForgeConfigSpec.ConfigValue<Double> foodHealFactor;
-        public final ForgeConfigSpec.ConfigValue<Integer> foodStackSize;
-        public final ForgeConfigSpec.ConfigValue<Boolean> hideHungerBar;
-        public final ForgeConfigSpec.ConfigValue<Integer> hungerBaseline;
+        public final ModConfigSpec.ConfigValue<Mode> mode;
+        public final ModConfigSpec.ConfigValue<Double> foodHealFactor;
+        public final ModConfigSpec.ConfigValue<Integer> foodStackSize;
+        public final ModConfigSpec.ConfigValue<Boolean> hideHungerBar;
+        public final ModConfigSpec.ConfigValue<Integer> hungerBaseline;
 
-        public General(ForgeConfigSpec.Builder builder) {
+        public General(ModConfigSpec.Builder builder) {
             builder.push("General");
 
             mode = builder

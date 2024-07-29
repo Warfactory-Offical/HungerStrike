@@ -2,36 +2,36 @@ package com.jaquadro.minecraft.hungerstrike.network;
 
 import com.jaquadro.minecraft.hungerstrike.ModConfig;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.network.NetworkEvent;
 
 public class PacketSyncConfig
 {
     private String mode;
 
-    public static void encode(PacketSyncConfig msg, FriendlyByteBuf buf) {
-        buf.writeUtf(msg.mode, 128);
-    }
-
-    public static PacketSyncConfig decode(FriendlyByteBuf buf) {
-        return new PacketSyncConfig(buf.readUtf(128));
-    }
-
-    private PacketSyncConfig(String mode) {
-        this.mode = mode;
-    }
-
-    PacketSyncConfig() {
+    public PacketSyncConfig() {
         this(ModConfig.GENERAL.mode.get().toString());
     }
 
-    public static void handle(PacketSyncConfig message, Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> handle(message));
-        ctx.get().setPacketHandled(true);
+    public PacketSyncConfig(String mode) {
+        this.mode = mode;
+    }
+
+    public PacketSyncConfig(FriendlyByteBuf buf) {
+        this.mode = buf.readUtf(128);
+    }
+
+    public void write(FriendlyByteBuf buf) {
+        buf.writeUtf(mode, 128);
+    }
+
+    public void handle(NetworkEvent.Context ctx) {
+        if (FMLEnvironment.dist.isClient())
+            handle(this);
+
+        ctx.setPacketHandled(true);
     }
 
     @OnlyIn(Dist.CLIENT)

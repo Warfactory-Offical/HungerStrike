@@ -2,12 +2,11 @@ package com.jaquadro.minecraft.hungerstrike;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.event.TickEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.LogicalSide;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

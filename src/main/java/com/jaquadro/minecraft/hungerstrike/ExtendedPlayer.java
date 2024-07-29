@@ -7,13 +7,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodData;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.capabilities.CapabilityManager;
+import net.neoforged.neoforge.common.capabilities.CapabilityToken;
+import net.neoforged.neoforge.event.TickEvent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkDirection;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
 
 public class ExtendedPlayer
 {
@@ -51,7 +51,7 @@ public class ExtendedPlayer
             hungerStrikeEnabled = enable;
             if (player instanceof ServerPlayer) {
                 ServerPlayer playerMP = (ServerPlayer)player;
-                PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), playerMP.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), playerMP.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
             }
         }
     }

@@ -83,7 +83,7 @@ public class HungerStrikeCommand
             ExtendedPlayer player = ExtendedPlayer.get(source.getServer().getPlayerList().getPlayer(profile.getId()));
             if (player != null && !player.isOnHungerStrike()) {
                 player.enableHungerStrike(true);
-                source.sendSuccess(() -> Component.translatable("commands.hungerstrike.add.success", ComponentUtils.getDisplayName(profile)), true);
+                source.sendSuccess(() -> Component.translatable("commands.hungerstrike.add.success", Component.literal(profile.getName())), true);
                 addedCount++;
             }
         }
@@ -97,7 +97,7 @@ public class HungerStrikeCommand
             ExtendedPlayer player = ExtendedPlayer.get(source.getServer().getPlayerList().getPlayer(profile.getId()));
             if (player != null && player.isOnHungerStrike()) {
                 player.enableHungerStrike(false);
-                source.sendSuccess(() -> Component.translatable("commands.hungerstrike.remove.success", ComponentUtils.getDisplayName(profile)), true);
+                source.sendSuccess(() -> Component.translatable("commands.hungerstrike.remove.success", Component.literal(profile.getName())), true);
                 removedCount++;
             }
         }

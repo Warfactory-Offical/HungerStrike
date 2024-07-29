@@ -2,8 +2,9 @@ package com.jaquadro.minecraft.hungerstrike.network;
 
 import com.jaquadro.minecraft.hungerstrike.HungerStrike;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 
 public class PacketHandler
 {
@@ -15,9 +16,25 @@ public class PacketHandler
         .serverAcceptedVersions(PROTOCOL_VERSION::equals)
         .simpleChannel();
 
+    private static int packetId = 0;
+    private static int id(){
+        return packetId++;
+    }
+
     public static void init() {
-        INSTANCE.registerMessage(0, PacketRequestSync.class, PacketRequestSync::encode, PacketRequestSync::decode, PacketRequestSync::handle);
-        INSTANCE.registerMessage(1, PacketSyncExtendedPlayer.class, PacketSyncExtendedPlayer::encode, PacketSyncExtendedPlayer::decode, PacketSyncExtendedPlayer::handle);
-        INSTANCE.registerMessage(2, PacketSyncConfig.class, PacketSyncConfig::encode, PacketSyncConfig::decode, PacketSyncConfig::handle);
+        INSTANCE.messageBuilder(PacketRequestSync.class, id(), PlayNetworkDirection.PLAY_TO_SERVER)
+            .decoder(PacketRequestSync::new)
+            .encoder(PacketRequestSync::write)
+            .consumerMainThread(PacketRequestSync::handle).add();
+
+        INSTANCE.messageBuilder(PacketSyncExtendedPlayer.class, id(), PlayNetworkDirection.PLAY_TO_CLIENT)
+            .decoder(PacketSyncExtendedPlayer::new)
+            .encoder(PacketSyncExtendedPlayer::write)
+            .consumerMainThread(PacketSyncExtendedPlayer::handle).add();
+
+        INSTANCE.messageBuilder(PacketSyncConfig.class, id(), PlayNetworkDirection.PLAY_TO_CLIENT)
+            .decoder(PacketSyncConfig::new)
+            .encoder(PacketSyncConfig::write)
+            .consumerMainThread(PacketSyncConfig::handle).add();
     }
 }
