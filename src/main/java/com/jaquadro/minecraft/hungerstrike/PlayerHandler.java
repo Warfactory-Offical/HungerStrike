@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class PlayerHandler
 {
-    private static final Map<GameProfile, Map<String, CompoundTag>> dataStore = new HashMap<>();
+    //private static final Map<GameProfile, Map<String, CompoundTag>> dataStore = new HashMap<>();
 
     public static List<Player> getStrikingPlayers (MinecraftServer server) {
         return getPlayers(server, true);
@@ -35,7 +35,7 @@ public class PlayerHandler
         return players;
     }
 
-    public void storeData (Player player) {
+    /*public void storeData (Player player) {
         ExtendedPlayer playerExt = ExtendedPlayer.get(player);
 
         if (playerExt != null) {
@@ -68,9 +68,9 @@ public class PlayerHandler
             if (data != null)
                 playerExt.loadNBTData(data);
         }
-    }
+    }*/
 
-    public CompoundTag getData (Player player, String name) {
+    /*public CompoundTag getData (Player player, String name) {
         return getData(player.getGameProfile(), name);
     }
 
@@ -80,7 +80,7 @@ public class PlayerHandler
             return null;
 
         return store.remove(name);
-    }
+    }*/
 
     public void tick (Player player, TickEvent.Phase phase, LogicalSide side) {
         ExtendedPlayer playerExt = ExtendedPlayer.get(player);

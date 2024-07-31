@@ -1,73 +1,50 @@
 package com.jaquadro.minecraft.hungerstrike;
 
-import com.jaquadro.minecraft.hungerstrike.network.PacketHandler;
-import com.jaquadro.minecraft.hungerstrike.network.PacketSyncExtendedPlayer;
+import com.jaquadro.minecraft.hungerstrike.network.NetworkHandler;
+import com.jaquadro.minecraft.hungerstrike.network.PlayerData;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodData;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.capabilities.CapabilityManager;
-import net.neoforged.neoforge.common.capabilities.CapabilityToken;
 import net.neoforged.neoforge.event.TickEvent;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
 
 public class ExtendedPlayer
 {
-    public static final ResourceLocation EXTENDED_PLAYER_KEY = new ResourceLocation("hungerstrike:extended_player");
-
-    public static Capability<ExtendedPlayer> EXTENDED_PLAYER_CAPABILITY = CapabilityManager.get(new CapabilityToken<>(){});
-
     private final Player player;
 
-    private boolean hungerStrikeEnabled;
     private int startHunger;
 
     public ExtendedPlayer(Player player) {
         this.player = player;
-        this.hungerStrikeEnabled = false;
+        this.player.getData(Attachments.HUNGER_STRIKE_ENABLED);
     }
 
     public static ExtendedPlayer get (Player player) {
-        if (EXTENDED_PLAYER_CAPABILITY == null || player == null)
-            return null;
-
-        return player.getCapability(EXTENDED_PLAYER_CAPABILITY, null).orElse(null);
-    }
-
-    public void saveNBTData(CompoundTag compound) {
-        compound.putBoolean("Enabled", hungerStrikeEnabled);
-    }
-
-    public void loadNBTData(CompoundTag compound) {
-        hungerStrikeEnabled = compound.getBoolean("Enabled");
+        return new ExtendedPlayer(player);
     }
 
     public void enableHungerStrike (boolean enable) {
-        if (hungerStrikeEnabled != enable) {
-            hungerStrikeEnabled = enable;
-            if (player instanceof ServerPlayer) {
-                ServerPlayer playerMP = (ServerPlayer)player;
-                PacketHandler.INSTANCE.sendTo(new PacketSyncExtendedPlayer(player), playerMP.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
-            }
+        if (this.player.getData(Attachments.HUNGER_STRIKE_ENABLED) != enable) {
+            this.player.setData(Attachments.HUNGER_STRIKE_ENABLED, enable);
+
+            if (player instanceof ServerPlayer playerMP)
+                NetworkHandler.sendTo(playerMP, new PlayerData(this));
         }
     }
 
     public void loadState (boolean hungerStrikeEnabled) {
-        this.hungerStrikeEnabled = hungerStrikeEnabled;
+        this.player.setData(Attachments.HUNGER_STRIKE_ENABLED, hungerStrikeEnabled);
     }
 
     public boolean isOnHungerStrike () {
-        return hungerStrikeEnabled;
+        return this.player.getData(Attachments.HUNGER_STRIKE_ENABLED);
     }
 
     private boolean shouldTick () {
         ModConfig.Mode mode = ModConfig.GENERAL.mode.get();
         if (mode == ModConfig.Mode.LIST)
-            return hungerStrikeEnabled;
+            return isOnHungerStrike();
         else
             return mode == ModConfig.Mode.ALL;
     }

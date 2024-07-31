@@ -12,7 +12,6 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.players.PlayerList;
-import net.minecraft.network.chat.ComponentUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
