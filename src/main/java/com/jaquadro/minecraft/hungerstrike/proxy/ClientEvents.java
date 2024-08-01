@@ -2,9 +2,8 @@ package com.jaquadro.minecraft.hungerstrike.proxy;
 
 import com.jaquadro.minecraft.hungerstrike.ModConfig;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
-import net.neoforged.neoforge.client.gui.overlay.GuiOverlayManager;
-import net.neoforged.neoforge.client.gui.overlay.VanillaGuiOverlay;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class ClientEvents
@@ -17,8 +16,8 @@ public class ClientEvents
         NeoForge.EVENT_BUS.addListener(this::renderGameOverlay);
     }
 
-    private void renderGameOverlay (RenderGuiOverlayEvent.Pre event) {
-        if (event.getOverlay() == GuiOverlayManager.findOverlay(VanillaGuiOverlay.FOOD_LEVEL.id())) {
+    private void renderGameOverlay (RenderGuiLayerEvent.Pre event) {
+        if (event.getName() == VanillaGuiLayers.FOOD_LEVEL) {
             if (!ModConfig.GENERAL.hideHungerBar.get())
                 return;
 

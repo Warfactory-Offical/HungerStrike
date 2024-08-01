@@ -7,7 +7,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodData;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.event.TickEvent;
 
 public class ExtendedPlayer
 {
@@ -49,22 +48,18 @@ public class ExtendedPlayer
             return mode == ModConfig.Mode.ALL;
     }
 
-    public void tick (TickEvent.Phase phase, LogicalSide side) {
+    public void tickStart () {
         if (!shouldTick())
             return;
 
-        if (phase == TickEvent.Phase.START)
-            tickStart();
-        else if (phase == TickEvent.Phase.END)
-            tickEnd(side);
-    }
-
-    private void tickStart () {
         setFoodData(player.getFoodData(), calcBaselineHunger(), 1);
         startHunger = player.getFoodData().getFoodLevel();
     }
 
-    private void tickEnd (LogicalSide side) {
+    public void tickEnd (LogicalSide side) {
+        if (!shouldTick())
+            return;
+
         if (side == LogicalSide.SERVER) {
             int foodDiff = player.getFoodData().getFoodLevel() - startHunger;
             if (foodDiff > 0)

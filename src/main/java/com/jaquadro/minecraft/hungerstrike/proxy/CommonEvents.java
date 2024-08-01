@@ -4,13 +4,15 @@ import com.jaquadro.minecraft.hungerstrike.PlayerHandler;
 import com.jaquadro.minecraft.hungerstrike.command.HungerStrikeCommand;
 import com.jaquadro.minecraft.hungerstrike.network.NetworkHandler;
 import com.jaquadro.minecraft.hungerstrike.network.SyncRequest;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 public class CommonEvents
 {
@@ -24,8 +26,15 @@ public class CommonEvents
     }
 
     @SubscribeEvent
-    public void tick (TickEvent.PlayerTickEvent event) {
-        playerHandler.tick(event.player, event.phase, event.side);
+    public void tick (PlayerTickEvent.Pre event) {
+        Player player = event.getEntity();
+        playerHandler.tickStart(event.getEntity(), player instanceof ServerPlayer ? LogicalSide.SERVER : LogicalSide.CLIENT);
+    }
+
+    @SubscribeEvent
+    public void tick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        playerHandler.tickEnd(event.getEntity(), player instanceof ServerPlayer ? LogicalSide.SERVER : LogicalSide.CLIENT);
     }
 
     /*@SubscribeEvent

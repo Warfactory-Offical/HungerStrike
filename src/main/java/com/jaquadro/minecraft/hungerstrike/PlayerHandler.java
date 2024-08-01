@@ -1,16 +1,11 @@
 package com.jaquadro.minecraft.hungerstrike;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.LogicalSide;
-import net.neoforged.neoforge.event.TickEvent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PlayerHandler
 {
@@ -82,10 +77,16 @@ public class PlayerHandler
         return store.remove(name);
     }*/
 
-    public void tick (Player player, TickEvent.Phase phase, LogicalSide side) {
+    public void tickStart (Player player, LogicalSide side) {
         ExtendedPlayer playerExt = ExtendedPlayer.get(player);
         if (playerExt != null)
-            playerExt.tick(phase, side);
+            playerExt.tickStart();
+    }
+
+    public void tickEnd (Player player, LogicalSide side) {
+        ExtendedPlayer playerExt = ExtendedPlayer.get(player);
+        if (playerExt != null)
+            playerExt.tickEnd(side);
     }
 
     public boolean isOnHungerStrike (Player player) {

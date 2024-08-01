@@ -11,7 +11,7 @@ public class ModConfig
     public static class General {
         public final ModConfigSpec.ConfigValue<Mode> mode;
         public final ModConfigSpec.ConfigValue<Double> foodHealFactor;
-        public final ModConfigSpec.ConfigValue<Integer> foodStackSize;
+        // public final ModConfigSpec.ConfigValue<Integer> foodStackSize;
         public final ModConfigSpec.ConfigValue<Boolean> hideHungerBar;
         public final ModConfigSpec.ConfigValue<Integer> hungerBaseline;
 
@@ -31,12 +31,14 @@ public class ModConfig
                     "At the default value of 0.5, food fills your heart bar at half the rate it would fill hunger.")
                 .define("foodHealFactor", 0.5);
 
+            /*
             foodStackSize = builder
                 .comment("Globally overrides the maximum stack size of food items.",
                     "This property affects all Vanilla and Mod food items that derive from ItemFood.",
                     "Set to -1 to retain the default stack size of each food item.  Note: This will affect the entire server, not just players on hunger strike.",
                     "WARNING: Setting this property may result in unexpected behavior with other mods.")
                 .defineInRange("maxFoodStackSize", -1, -1, 64);
+             */
 
             hideHungerBar = builder
                 .comment("Controls whether or not the hunger bar is hidden for players on hunger strike.",

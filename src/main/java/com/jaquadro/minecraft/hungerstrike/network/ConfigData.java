@@ -3,35 +3,32 @@ package com.jaquadro.minecraft.hungerstrike.network;
 import com.jaquadro.minecraft.hungerstrike.HungerStrike;
 import com.jaquadro.minecraft.hungerstrike.ModConfig;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ConfigData(String mode) implements CustomPacketPayload
 {
-    public static final ResourceLocation ID = new ResourceLocation(HungerStrike.MOD_ID, "config_data");
+    public static final Type<ConfigData> TYPE = new Type<>(new ResourceLocation(HungerStrike.MOD_ID, "config_data"));
+
+    public static final StreamCodec<FriendlyByteBuf, ConfigData> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.STRING_UTF8,
+        ConfigData::mode,
+        ConfigData::new
+    );
 
     public ConfigData() {
         this(ModConfig.GENERAL.mode.get().toString());
     }
 
-    public ConfigData(final FriendlyByteBuf buffer) {
-        this(buffer.readUtf());
-    }
-
     @Override
-    public void write (FriendlyByteBuf buffer) {
-        buffer.writeUtf(mode);
+    public Type<? extends CustomPacketPayload> type () {
+        return TYPE;
     }
 
-    @Override
-    public ResourceLocation id () {
-        return ID;
-    }
-
-    public static void handleClient(final ConfigData data, final PlayPayloadContext context) {
-        context.workHandler().submitAsync(() -> {
-            ModConfig.GENERAL.mode.set(ModConfig.Mode.valueOf(data.mode()));
-        }).exceptionally(e -> null);
+    public static void handleClient(final ConfigData data, final IPayloadContext context) {
+        ModConfig.GENERAL.mode.set(ModConfig.Mode.valueOf(data.mode()));
     }
 }

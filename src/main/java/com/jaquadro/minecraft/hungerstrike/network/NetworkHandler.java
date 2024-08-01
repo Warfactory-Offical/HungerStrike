@@ -6,34 +6,28 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public class NetworkHandler
 {
     @SubscribeEvent
-    public static void register(final RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar registrar = event.registrar(HungerStrike.MOD_ID);
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(HungerStrike.MOD_ID);
 
-        registrar.play(SyncRequest.ID, SyncRequest::new, handler -> handler
-            .server(SyncRequest::handleServer)
-        );
+        registrar.playToServer(SyncRequest.TYPE, SyncRequest.STREAM_CODEC, SyncRequest::handleServer);
 
-        registrar.play(PlayerData.ID, PlayerData::new, handler -> handler
-            .client(PlayerData::handleClient)
-        );
+        registrar.playToClient(PlayerData.TYPE, PlayerData.STREAM_CODEC, PlayerData::handleClient);
 
-        registrar.play(ConfigData.ID, ConfigData::new, handler -> handler
-            .client(ConfigData::handleClient)
-        );
+        registrar.playToClient(ConfigData.TYPE, ConfigData.STREAM_CODEC, ConfigData::handleClient);
     }
 
     public static void sendTo(ServerPlayer player, CustomPacketPayload message) {
         if (!(player instanceof FakePlayer))
-            PacketDistributor.PLAYER.with(player).send(message);
+            PacketDistributor.sendToPlayer(player, message);
     }
 
     public static void sendToServer(CustomPacketPayload message) {
-        PacketDistributor.SERVER.noArg().send(message);
+        PacketDistributor.sendToServer(message);
     }
 }
