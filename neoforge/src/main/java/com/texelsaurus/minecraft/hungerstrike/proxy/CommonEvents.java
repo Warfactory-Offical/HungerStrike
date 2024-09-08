@@ -1,14 +1,12 @@
 package com.texelsaurus.minecraft.hungerstrike.proxy;
 
+import com.texelsaurus.minecraft.hungerstrike.ModServices;
 import com.texelsaurus.minecraft.hungerstrike.PlayerHandler;
 import com.texelsaurus.minecraft.hungerstrike.command.HungerStrikeCommand;
-import com.texelsaurus.minecraft.hungerstrike.network.NetworkHandler;
 import com.texelsaurus.minecraft.hungerstrike.network.SyncRequest;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -27,14 +25,12 @@ public class CommonEvents
 
     @SubscribeEvent
     public void tick (PlayerTickEvent.Pre event) {
-        Player player = event.getEntity();
-        playerHandler.tickStart(event.getEntity(), player instanceof ServerPlayer ? LogicalSide.SERVER : LogicalSide.CLIENT);
+        playerHandler.tickStart(event.getEntity());
     }
 
     @SubscribeEvent
     public void tick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        playerHandler.tickEnd(event.getEntity(), player instanceof ServerPlayer ? LogicalSide.SERVER : LogicalSide.CLIENT);
+        playerHandler.tickEnd(event.getEntity());
     }
 
     /*@SubscribeEvent
@@ -52,7 +48,7 @@ public class CommonEvents
         //if (!event.getLevel().isClientSide && entity instanceof ServerPlayer)
         //    playerHandler.restoreData((Player) entity);
         if (event.getLevel().isClientSide && entity instanceof Player)
-           NetworkHandler.sendToServer(new SyncRequest());
+           ModServices.NETWORK.sendToServer(new SyncRequest());
     }
 
     @SubscribeEvent

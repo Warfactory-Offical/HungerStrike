@@ -5,15 +5,19 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class ExtendedPlayer
 {
-    protected final Player player;
+    private static Map<Player, Integer> startHungerMap = new HashMap<>();
 
-    private int startHunger;
+    protected final Player player;
 
     public ExtendedPlayer (Player player) {
         this.player = player;
-        //this.player.getData(Attachments.HUNGER_STRIKE_ENABLED);
+        if (!startHungerMap.containsKey(player))
+            startHungerMap.put(player, 0);
     }
 
     public abstract void enableHungerStrike (boolean enable);
@@ -35,7 +39,7 @@ public abstract class ExtendedPlayer
             return;
 
         setFoodData(player.getFoodData(), calcBaselineHunger(), 1);
-        startHunger = player.getFoodData().getFoodLevel();
+        startHungerMap.put(player, player.getFoodData().getFoodLevel());
     }
 
     public void tickEnd (boolean serverSide) {
@@ -43,7 +47,10 @@ public abstract class ExtendedPlayer
             return;
 
         if (serverSide) {
-            int foodDiff = player.getFoodData().getFoodLevel() - startHunger;
+            int foodLevel = player.getFoodData().getFoodLevel();
+            int startHunger = startHungerMap.getOrDefault(player, foodLevel);
+
+            int foodDiff = foodLevel - startHunger;
             if (foodDiff > 0)
                 player.heal((float)(foodDiff * ModConfig.GENERAL.foodHealFactor.get()));
         }

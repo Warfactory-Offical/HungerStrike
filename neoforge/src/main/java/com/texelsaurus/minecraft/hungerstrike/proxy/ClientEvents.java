@@ -1,6 +1,6 @@
 package com.texelsaurus.minecraft.hungerstrike.proxy;
 
-import com.texelsaurus.minecraft.hungerstrike.ModConfig;
+import com.texelsaurus.minecraft.hungerstrike.config.ModConfig;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
