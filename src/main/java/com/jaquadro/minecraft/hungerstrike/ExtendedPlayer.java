@@ -1,6 +1,7 @@
 package com.jaquadro.minecraft.hungerstrike;
 
 import com.jaquadro.minecraft.hungerstrike.network.SyncExtendedPlayerMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +12,8 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+
+import static com.jaquadro.minecraft.hungerstrike.HungerStrike.proxy;
 
 public class ExtendedPlayer
 {
@@ -60,20 +63,6 @@ public class ExtendedPlayer
         return hungerStrikeEnabled;
     }
 
-    /*public boolean getEffectiveHungerStrike () {
-        if (!player.worldObj.isRemote)
-            return hungerStrikeEnabled;
-
-        switch (HungerStrike.config.getMode()) {
-            case NONE:
-                return false;
-            case ALL:
-                return true;
-            case LIST:
-            default:
-                return hungerStrikeEnabled;
-        }
-    }*/
 
     private boolean shouldTick () {
         ConfigManager.Mode mode = HungerStrike.config.getMode();
