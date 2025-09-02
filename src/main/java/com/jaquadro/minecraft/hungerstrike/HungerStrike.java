@@ -2,9 +2,13 @@ package com.jaquadro.minecraft.hungerstrike;
 
 import com.jaquadro.minecraft.hungerstrike.command.CommandHungerStrike;
 import com.jaquadro.minecraft.hungerstrike.proxy.CommonProxy;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -44,6 +48,20 @@ public class HungerStrike {
 
         network = NetworkRegistry.INSTANCE.newSimpleChannel(Tags.MODID);
         proxy.registerNetworkHandlers();
+    }
+
+    @Mod.EventHandler
+    public void onRightClick(PlayerInteractEvent.RightClickItem event) {
+        EntityPlayer player = event.getEntityPlayer();
+        ItemStack stack = event.getItemStack();
+
+        if (stack.getItem() instanceof ItemFood) {
+            if (!player.canEat(false) && !player.getActivePotionEffects().isEmpty()) {
+                player.setActiveHand(event.getHand());
+                event.setCancellationResult(EnumActionResult.SUCCESS);
+                event.setCanceled(true);
+            }
+        }
     }
 
     @Mod.EventHandler
