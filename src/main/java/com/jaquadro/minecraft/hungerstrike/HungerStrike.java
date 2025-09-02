@@ -50,13 +50,13 @@ public class HungerStrike {
         proxy.registerNetworkHandlers();
     }
 
-    @Mod.EventHandler
+    @SubscribeEvent
     public void onRightClick(PlayerInteractEvent.RightClickItem event) {
         EntityPlayer player = event.getEntityPlayer();
         ItemStack stack = event.getItemStack();
 
         if (stack.getItem() instanceof ItemFood) {
-            if (!player.canEat(false) && !player.getActivePotionEffects().isEmpty()) {
+            if (!player.canEat(false) && player.getHealth() < player.getMaxHealth()) {
                 player.setActiveHand(event.getHand());
                 event.setCancellationResult(EnumActionResult.SUCCESS);
                 event.setCanceled(true);
