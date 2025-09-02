@@ -2,6 +2,7 @@ package com.jaquadro.minecraft.hungerstrike.network;
 
 import com.jaquadro.minecraft.hungerstrike.ConfigManager;
 import com.jaquadro.minecraft.hungerstrike.HungerStrike;
+import com.jaquadro.minecraft.hungerstrike.Tags;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagString;
@@ -55,7 +56,7 @@ public class SyncConfigMessage implements IMessage
     {
         @Override
         public IMessage onMessage (SyncConfigMessage message, MessageContext ctx) {
-            FMLLog.log(HungerStrike.MOD_ID, Level.WARN, "SyncConfigMessage stub handler called.");
+            FMLLog.log(Tags.MODID, Level.WARN, "SyncConfigMessage stub handler called.");
             return null;
         }
     }

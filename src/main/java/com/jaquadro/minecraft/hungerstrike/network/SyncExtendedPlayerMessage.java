@@ -1,7 +1,7 @@
 package com.jaquadro.minecraft.hungerstrike.network;
 
 import com.jaquadro.minecraft.hungerstrike.ExtendedPlayer;
-import com.jaquadro.minecraft.hungerstrike.HungerStrike;
+import com.jaquadro.minecraft.hungerstrike.Tags;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,7 +59,7 @@ public class SyncExtendedPlayerMessage implements IMessage
     {
         @Override
         public IMessage onMessage (SyncExtendedPlayerMessage message, MessageContext ctx) {
-            FMLLog.log(HungerStrike.MOD_ID, Level.WARN, "SyncExtendedPlayerMessage stub handler called.");
+            FMLLog.log(Tags.MODID, Level.WARN, "SyncExtendedPlayerMessage stub handler called.");
             return null;
         }
     }

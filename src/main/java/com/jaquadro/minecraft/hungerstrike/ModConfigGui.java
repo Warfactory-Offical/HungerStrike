@@ -13,7 +13,7 @@ import java.util.List;
 public class ModConfigGui extends GuiConfig
 {
     public ModConfigGui (GuiScreen parent) {
-        super(parent, getConfigElements(), HungerStrike.MOD_ID, false, false, "Hunger Strike Configuration");
+        super(parent, getConfigElements(), Tags.MODID, false, false, "Hunger Strike Configuration");
     }
 
     private static List<IConfigElement> getConfigElements () {
