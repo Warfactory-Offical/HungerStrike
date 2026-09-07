@@ -1,11 +1,26 @@
+# Gradle
 .gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Mod dev runtime
+run/
+runs/
+run-data/
+repo/
+
+# IDE
+.idea/
 *.iml
 *.ipr
 *.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
 out/
-runtime/
-build/
-run/
-.idea/
-logs/
-runs/
+
+# OS
+.DS_Store
+Thumbs.db
