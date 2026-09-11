@@ -1,8 +1,10 @@
 pluginManagement {
     repositories {
         mavenLocal()
-        gradlePluginPortal()
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
         maven { name = 'NeoForged'; url = 'https://maven.neoforged.net/releases' }
+        mavenCentral()
+        gradlePluginPortal()
     }
 }
 
@@ -11,3 +13,9 @@ plugins {
 }
 
 rootProject.name = 'HungerStrike'
+
+// common/ is deliberately NOT a subproject. It is a plain source directory that each loader module
+// adds to its own source set, so its classes are compiled twice -- once against NeoForge's patched
+// Minecraft, once against Loom's -- and land in both jars with no shared-artifact plumbing.
+include 'neoforge'
+include 'fabric'

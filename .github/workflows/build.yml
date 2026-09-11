@@ -24,14 +24,14 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build
-        run: ./gradlew build --stacktrace
+      - name: Build both loaders
+        run: ./gradlew collectJars --stacktrace
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: hungerstrike-jars
-          path: |
-            build/libs/*.jar
-            !build/libs/*-sources.jar
+          # collectJars gathers the NeoForge and Fabric jars here; sources jars stay in the
+          # subprojects' own build/libs.
+          path: build/libs/*.jar
           if-no-files-found: error

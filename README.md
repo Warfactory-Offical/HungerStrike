@@ -4,7 +4,8 @@ Restores pre-hunger health mechanics to Minecraft. The hunger bar stops matterin
 a configurable baseline, and eating food heals you directly instead of filling the bar — the way
 health worked before Beta 1.8.
 
-This is a NeoForge port for **Minecraft 26.2**. The original mod is by Texelsaur (jaquadro).
+One repository, two jars: **NeoForge** and **Fabric**, both for **Minecraft 26.2**. The original mod
+is by Texelsaur (jaquadro).
 
 ## What it does
 
@@ -18,6 +19,9 @@ This is a NeoForge port for **Minecraft 26.2**. The original mod is by Texelsaur
 - **Per-player or server-wide.** Run it for everyone, for nobody, or only for players an operator
   has added to the list.
 
+The Fabric build requires [Fabric API](https://modrinth.com/mod/fabric-api). The NeoForge build has
+no dependencies beyond NeoForge itself.
+
 ## Configuration
 
 `config/hungerstrike-common.toml`:
@@ -30,7 +34,8 @@ This is a NeoForge port for **Minecraft 26.2**. The original mod is by Texelsaur
 | `hideHungerBar` | `true` | Hide the food bar for affected players. |
 | `hungerBaseline` | `10` | Where the bar is pinned, `1`–`20`. |
 
-Config files from the 1.20.1 Forge build carry over as-is.
+Both jars read and write the same file in the same place, byte for byte, so a config moves freely
+between them and from the older Forge builds.
 
 ### Modes
 
@@ -52,39 +57,74 @@ Requires permission level 3 (gamemaster).
 
 `setmode` writes to the config and pushes the new mode to every connected client.
 
+## Repository layout
+
+```
+common/          shared sources — not a Gradle project, see below
+neoforge/        NeoForge module (ModDevGradle)
+fabric/          Fabric module (Loom)
+```
+
+`common/` is a plain source directory, not a subproject. Each loader module adds it to its own
+source set:
+
+```groovy
+sourceSets.main.java.srcDir rootProject.file('common/src/main/java')
+sourceSets.main.resources.srcDir rootProject.file('common/src/main/resources')
+```
+
+So the shared classes are compiled twice — once against NeoForge's patched Minecraft, once against
+Loom's — and land in both jars. There is no shared artifact to publish, no cross-plugin classpath to
+reconcile, and no Architectury.
+
+That works here because **Minecraft ships unobfuscated from 26.x on**: Fabric meta serves
+intermediary `0.0.0`, Yarn stopped at 1.21.11, and both loaders now compile against official Mojang
+names. `common/` needs no mapping shim and no `@ExpectPlatform` code generation.
+
+The little that genuinely differs sits behind [`HungerStrikePlatform`](common/src/main/java/com/jaquadro/minecraft/hungerstrike/HungerStrikePlatform.java) —
+the config directory, per-player attachment storage, and the mode-sync send. Each module installs
+its implementation from its own entrypoint.
+
 ## Building
 
 Requires JDK 25.
 
 ```
-./gradlew build
+./gradlew build          # builds both loaders
+./gradlew collectJars    # …and gathers both jars into build/libs
+./gradlew :neoforge:build
+./gradlew :fabric:build
 ```
 
-The jar lands in `build/libs/`. `./gradlew runClient` and `./gradlew runServer` start a dev instance.
-
-## Porting notes
-
-The 1.20.1 Forge version relied on several APIs that no longer exist. What changed:
-
-| Then (Forge, 1.20.1) | Now (NeoForge, 26.2) |
+| | jar |
 | --- | --- |
-| `ExtendedPlayer` capability + `ExtendedPlayerProvider` | A synced, serialized [data attachment](src/main/java/com/jaquadro/minecraft/hungerstrike/HungerStrikeAttachments.java) |
-| `PlayerHandler` map keyed by `GameProfile`, to carry strike state through death | `AttachmentType.Builder#copyOnDeath` |
-| `PacketSyncExtendedPlayer` + `PacketRequestSync` | Deleted — attachment sync covers both, including the initial push on join |
-| `SimpleChannel` + `registerMessage` | `CustomPacketPayload` + `PayloadRegistrar`, for the one remaining packet (mode sync) |
-| Access transformer on `Item.maxStackSize` | `ModifyDefaultComponentsEvent` — stack size is a data component since 1.20.5 |
-| `ClientProxy`/`ServerProxy` via `DistExecutor` | `@Mod(dist = Dist.CLIENT)` client entrypoint |
-| `RenderGuiOverlayEvent` + `VanillaGuiOverlay` | `RenderGuiLayerEvent` + `VanillaGuiLayers` |
-| `TickEvent.PlayerTickEvent` with a `Phase` field | `PlayerTickEvent.Pre` / `PlayerTickEvent.Post` |
-| `FoodData#eat` arithmetic to force a food level | `FoodData#setFoodLevel` / `#setSaturation`, both public now |
-| `ForgeConfigSpec` | `ModConfigSpec` |
-| `ResourceLocation` | `Identifier` |
-| `Collection<GameProfile>` from `GameProfileArgument` | `Collection<NameAndId>` |
-| `requires(src -> src.hasPermission(3))` | `requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))` |
+| NeoForge | `neoforge/build/libs/HungerStrike-neoforge-26.2-9.0.0.jar` |
+| Fabric | `fabric/build/libs/HungerStrike-fabric-26.2-9.0.0.jar` |
 
-One behavioural addition: the client now distinguishes the mode from its own config file from the
-mode the server pushed, and drops the server's value on disconnect. The old build wrote the server's
-mode straight into the client's config object, which could leak between worlds.
+`collectJars` copies both into `build/libs/` at the root, which is what CI uploads.
+
+Dev instances run per module: `./gradlew :neoforge:runClient`, `./gradlew :fabric:runServer`, and so
+on.
+
+## How the two modules differ
+
+| NeoForge | Fabric |
+| --- | --- |
+| `@Mod` constructor + `IEventBus` | `ModInitializer` / `ClientModInitializer` in `fabric.mod.json` |
+| `DeferredRegister` for attachment types | `AttachmentRegistry.create` at class init |
+| `AttachmentType.builder().serialize(…).sync(…)` | `.persistent(Codec)` + `.syncWith(codec, AttachmentSyncPredicate.targetOnly())` |
+| `PlayerTickEvent.Pre` / `Post` | a mixin at `HEAD`/`RETURN` of `Player#tick` — the same two points NeoForge fires those events from |
+| tick-start food level in a non-serialized attachment | the same value in a `@Unique` mixin field |
+| `ModifyDefaultComponentsEvent` | `DefaultItemComponentEvents.MODIFY` |
+| `RenderGuiLayerEvent.Pre` cancel on `VanillaGuiLayers.FOOD_LEVEL` | `HudElementRegistry.replaceElement(VanillaHudElements.FOOD_BAR, …)` wrapping the delegate |
+| `PayloadRegistrar#optional` + `PacketDistributor` | `PayloadTypeRegistry.clientboundPlay()` + `ServerPlayNetworking.canSend`/`send` |
+| `RegisterCommandsEvent` | `CommandRegistrationCallback.EVENT` |
+| `PlayerEvent.PlayerLoggedInEvent` | `ServerPlayConnectionEvents.JOIN` |
+| `ClientPlayerNetworkEvent.LoggingOut` | `ClientPlayConnectionEvents.DISCONNECT` |
+| `FMLPaths.CONFIGDIR` | `FabricLoader#getConfigDir` |
+
+Everything else — the tick logic, the config, the command tree, the payload — is one copy in
+`common/`.
 
 ## License
 

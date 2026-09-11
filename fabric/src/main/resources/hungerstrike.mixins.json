@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"minVersion": "0.8.5",
+	"package": "com.jaquadro.minecraft.hungerstrike.fabric.mixin",
+	"mixins": [
+		"PlayerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -1,0 +1,52 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+base {
+    archivesName = "${mod_name.replaceAll('\\s', '')}-fabric-${minecraft_version}"
+}
+
+// common/ is not a Gradle project; its sources are compiled straight into this module against
+// Loom's Minecraft. The NeoForge module does the same against its patched Minecraft.
+sourceSets.main.java.srcDir rootProject.file('common/src/main/java')
+sourceSets.main.resources.srcDir rootProject.file('common/src/main/resources')
+
+dependencies {
+    // 26.x ships unobfuscated: Loom resolves intermediary 0.0.0 and there is no mapping set to
+    // declare, which is also why `modImplementation` does not exist here.
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+
+    implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+}
+
+loom {
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgs '--nogui'
+        }
+    }
+}
+
+// Keep the version in gradle.properties the single source of truth.
+processResources {
+    def replaceProperties = [
+            mod_id                         : mod_id,
+            mod_name                       : mod_name,
+            mod_version                    : mod_version,
+            mod_authors                    : mod_authors,
+            mod_license                    : mod_license,
+            mod_description                : mod_description,
+            fabric_minecraft_version_range : fabric_minecraft_version_range,
+            fabric_loader_version          : fabric_loader_version
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching('fabric.mod.json') {
+        expand replaceProperties
+    }
+}
